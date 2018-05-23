@@ -23,7 +23,7 @@ void QBLEDevice::pair()
 {
     qDebug() << "QBLEDevice::pair";
 
-    m_deviceInterface->asyncCall("Pair");
+    m_deviceInterface->call("Pair");
 }
 
 void QBLEDevice::connectToDevice()
