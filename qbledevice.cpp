@@ -16,7 +16,7 @@ void QBLEDevice::setDevicePath(const QString &path)
     argumentMatch << "org.bluez.Device1";
 
     QDBusConnection::systemBus().connect("org.bluez", m_devicePath, "org.freedesktop.DBus.Properties","PropertiesChanged", argumentMatch, QString(),
-                                         this, SLOT(onPropertiesChanged(QString, QVariantMap, QStringList)));
+                                         this, SLOT(onPropertiesChangedInt(QString, QVariantMap, QStringList)));
 }
 
 void QBLEDevice::pair()
@@ -55,7 +55,7 @@ void QBLEDevice::addService(const QString &uuid, QBLEService *service)
     m_serviceMap[uuid] = service;
 }
 
-void QBLEDevice::onPropertiesChanged(const QString &interface, const QVariantMap &map, const QStringList &list)
+void QBLEDevice::onPropertiesChangedInt(const QString &interface, const QVariantMap &map, const QStringList &list)
 {
     emit propertiesChanged(interface, map, list);
 }

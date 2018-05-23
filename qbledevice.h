@@ -22,9 +22,10 @@ public:
 
     QString devicePath() const;
 
+    Q_SIGNAL void propertiesChanged(const QString &interface, const QVariantMap &map, const QStringList &list);
+
 protected:
     Q_SIGNAL void servicesResolved();
-    Q_SIGNAL void propertiesChanged(const QString &interface, const QVariantMap &map, const QStringList &list);
 
     void addService(const QString &uuid, QBLEService *service);
     QVariant deviceProperty(const char *name) const;
@@ -35,7 +36,7 @@ private:
     QDBusInterface *m_deviceInterface;
 
     void introspect();
-    Q_SLOT void onPropertiesChanged(const QString &interface, const QVariantMap &map, const QStringList &list);
+    Q_SLOT void onPropertiesChangedInt(const QString &interface, const QVariantMap &map, const QStringList &list);
 };
 
 #endif // QBLEDEVICE_H
