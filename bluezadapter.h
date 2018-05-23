@@ -15,6 +15,7 @@ public:
     Q_INVOKABLE void stopDiscovery();
     Q_INVOKABLE QString matchDevice(const QString &match);
     Q_INVOKABLE bool deviceIsValid(const QString &path);
+    Q_INVOKABLE QString deviceName(const QString &path);
 
 private:
     QString m_adapterPath = "/org/bluez/hci0";

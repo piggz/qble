@@ -95,3 +95,31 @@ bool BluezAdapter::deviceIsValid(const QString &match)
 
     return false;
 }
+
+QString BluezAdapter::deviceName(const QString &search)
+{
+    qDebug() << "BluezAdapter::deviceName:looking for:" << search;
+
+    QDBusInterface adapterIntro("org.bluez", m_adapterPath, "org.freedesktop.DBus.Introspectable", QDBusConnection::systemBus(), 0);
+    QDBusReply<QString> xml = adapterIntro.call("Introspect");
+
+    QDomDocument doc;
+    doc.setContent(xml.value());
+
+    QDomNodeList nodes = doc.elementsByTagName("node");
+
+    for (int x = 0; x < nodes.count(); x++)
+    {
+        QDomElement node = nodes.at(x).toElement();
+        QString nodeName = node.attribute("name");
+
+        if (nodeName.startsWith("dev_")) {
+            QString path = m_adapterPath + "/" + nodeName;
+            if (path == search) {
+                QDBusInterface devInterface("org.bluez", path, "org.bluez.Device1", QDBusConnection::systemBus(), 0);
+                return devInterface.property("Name").toString();
+            }
+        }
+    }
+    return QString();
+}
