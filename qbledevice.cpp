@@ -19,11 +19,37 @@ void QBLEDevice::setDevicePath(const QString &path)
                                          this, SLOT(onPropertiesChangedInt(QString, QVariantMap, QStringList)));
 }
 
-void QBLEDevice::pair()
+QString QBLEDevice::pair()
 {
     qDebug() << "QBLEDevice::pair";
 
-    m_deviceInterface->call("Pair");
+    QDBusMessage reply = m_deviceInterface->call("Pair");
+
+    return reply.errorMessage();
+}
+
+void QBLEDevice::pairAsync()
+{
+    qDebug() << "QBLEDevice::pairAsync";
+
+    QDBusPendingCall async = m_deviceInterface->asyncCall("Pair");
+
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(async, this);
+
+    QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),
+                     this, SLOT(pairFinished(QDBusPendingCallWatcher*)));
+}
+
+void QBLEDevice::onPairFinished(QDBusPendingCallWatcher *call)
+{
+    QDBusPendingReply<QDBusMessage> reply = *call;
+    if (reply.isError()) {
+        qDebug() << "QBLECharacteristic::readFinished:" << reply.error().message();
+        emit( reply.error().message());
+    } else {
+        emit pairFinished("paired");
+    }
+    call->deleteLater();
 }
 
 void QBLEDevice::connectToDevice()
