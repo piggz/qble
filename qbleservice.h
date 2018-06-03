@@ -27,6 +27,8 @@ public:
     void enableNotification(const QString &c);
     void disableNotification(const QString &c);
 
+    Q_SIGNAL void message(const QString &text);
+
 protected:
     Q_SIGNAL void propertiesChanged(QString, QVariantMap, QStringList);
 
