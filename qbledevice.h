@@ -28,6 +28,8 @@ public:
 
     Q_SIGNAL void pairFinished(const QString &message);
 
+    Q_INVOKABLE bool operationRunning();
+
 protected:
     Q_SIGNAL void servicesResolved();
 
