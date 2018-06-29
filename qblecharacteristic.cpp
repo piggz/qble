@@ -26,6 +26,11 @@ void QBLECharacteristic::writeValue(const QByteArray &val) const
     m_characteristicInterface->call("WriteValue", val, QVariantMap());
 }
 
+void QBLECharacteristic::writeAsync(const QByteArray &val) const
+{
+    m_characteristicInterface->asyncCall("WriteValue", val, QVariantMap());
+}
+
 QByteArray QBLECharacteristic::readValue() const
 {
     QDBusReply<QByteArray> reply = m_characteristicInterface->call("ReadValue", QVariantMap());

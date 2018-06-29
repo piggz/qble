@@ -76,6 +76,18 @@ void QBLEService::writeValue(const QString &c, const QByteArray &value)
     }
 }
 
+void QBLEService::writeAsync(const QString &c, const QByteArray &value)
+{
+    qDebug() << "Async Writing to " << c << ":" << value.toHex();
+    QBLECharacteristic *ch = characteristic(c);
+
+    if (ch) {
+        ch->writeAsync(value);
+    } else {
+        qDebug() << "Unable to get characteristic";
+    }
+}
+
 QByteArray QBLEService::readValue(const QString &c)
 {
     qDebug() << "Reading from " << c;

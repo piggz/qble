@@ -12,6 +12,7 @@ public:
     explicit QBLECharacteristic(const QString &path, QObject *parent = nullptr);
 
     void writeValue(const QByteArray &val) const;
+    void writeAsync(const QByteArray &val) const;
     QByteArray readValue() const;
     void readAsync();
     QByteArray value() const; //Returns last buffered value without a read
