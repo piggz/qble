@@ -14,7 +14,7 @@ QBLECharacteristic::QBLECharacteristic(const QString &path, QObject *parent) : Q
 
 void QBLECharacteristic::onPropertiesChanged(const QString &interface, const QVariantMap &map, const QStringList &list)
 {
-    qDebug() << "Characteristic property changed" << interface << map;
+    //qDebug() << "Characteristic property changed" << interface << map;
 
     if (map.contains("Value")) {
         emit characteristicChanged(m_uuid, map["Value"].toByteArray());
@@ -34,7 +34,7 @@ void QBLECharacteristic::writeAsync(const QByteArray &val) const
 QByteArray QBLECharacteristic::readValue() const
 {
     QDBusReply<QByteArray> reply = m_characteristicInterface->call("ReadValue", QVariantMap());
-    qDebug() << reply.error().message();
+    //qDebug() << reply.error().message();
     return reply.value();
 }
 
