@@ -25,8 +25,8 @@ public:
     QString devicePath() const;
 
     Q_SIGNAL void propertiesChanged(const QString &interface, const QVariantMap &map, const QStringList &list);
-
     Q_SIGNAL void pairFinished(const QString &message);
+    Q_SIGNAL void operationRunningChanged();
 
     Q_INVOKABLE bool operationRunning();
 
