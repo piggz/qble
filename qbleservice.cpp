@@ -10,25 +10,25 @@ QBLEService::QBLEService(const QString &uuid,const QString &path,  QObject *pare
 
 void QBLEService::characteristicChangedInt(const QString &characteristic, const QByteArray &value)
 {
-    qDebug() << "characteristicChangedInt:" << characteristic << value.size() << value.toHex();
+    //qDebug() << "characteristicChangedInt:" << characteristic << value.size() << value.toHex();
     emit characteristicChanged(characteristic, value);
 }
 
 void QBLEService::characteristicReadInt(const QString &characteristic, const QByteArray &value)
 {
-    qDebug() << "characteristicReadInt:" << characteristic << value.size() << value.toHex();
+    //qDebug() << "characteristicReadInt:" << characteristic << value.size() << value.toHex();
     emit characteristicRead(characteristic, value);
 }
 
 void QBLEService::characteristicWrittenInt(const QString &characteristic, const QByteArray &value)
 {
-    qDebug() << "characteristicWrittenInt:" << characteristic << value.size() << value.toHex();
+    //qDebug() << "characteristicWrittenInt:" << characteristic << value.size() << value.toHex();
     emit characteristicRead(characteristic, value);
 }
 
 void QBLEService::descriptorWrittenInt(const QString &descriptor, const QByteArray &value)
 {
-    qDebug() << "descriptorWrittenInt:" << descriptor << value.size() << value.toHex();
+    //qDebug() << "descriptorWrittenInt:" << descriptor << value.size() << value.toHex();
     emit descriptorWritten(descriptor, value);
 }
 
