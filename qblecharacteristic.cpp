@@ -14,6 +14,8 @@ QBLECharacteristic::QBLECharacteristic(const QString &path, QObject *parent) : Q
 
 void QBLECharacteristic::onPropertiesChanged(const QString &interface, const QVariantMap &map, const QStringList &list)
 {
+    Q_UNUSED(interface);
+    Q_UNUSED(list);
     //qDebug() << "Characteristic property changed" << interface << map;
 
     if (map.contains("Value")) {
