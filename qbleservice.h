@@ -7,6 +7,9 @@
 #include <QtDBus>
 #include <QVariantMap>
 
+#define UCHAR_TO_BYTEARRAY(uarray) \
+    QByteArray(reinterpret_cast<const char*>(uarray), sizeof(uarray))
+
 class QBLEService : public QObject
 {
     Q_OBJECT
