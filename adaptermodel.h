@@ -11,7 +11,8 @@ public:
     AdapterModel();
     enum Roles {
         AdapterPath = Qt::UserRole + 1,
-        AdapterName
+        AdapterName,
+        ItemText
     };
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;

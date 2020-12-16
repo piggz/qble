@@ -37,7 +37,7 @@ int AdapterModel::rowCount(const QModelIndex &parent) const
 QVariant AdapterModel::data(const QModelIndex &index, int role) const
 {
     if (index.row() >= 0 && index.row() < m_devices.length()) {
-        if (role == AdapterPath) {
+        if (role == AdapterPath || role == ItemText) {
             return m_devices.at(index.row());
         } else if (role == AdapterName) {
             return m_deviceNames.at(index.row());
@@ -51,6 +51,7 @@ QHash<int, QByteArray> AdapterModel::roleNames() const
     QHash<int, QByteArray> names;
     names[AdapterPath] = "path";
     names[AdapterName] = "name";
+    names[ItemText] = "itemText";
 
     return names;
 }
