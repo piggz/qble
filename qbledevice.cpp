@@ -66,7 +66,7 @@ void QBLEDevice::disconnectFromDevice()
     m_deviceInterface->call("Disconnect");
 }
 
-QBLEService* QBLEDevice::service(const QString &uuid)
+QBLEService* QBLEDevice::service(const QString &uuid) const
 {
     return m_serviceMap.value(uuid, nullptr);
 }

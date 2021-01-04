@@ -13,7 +13,7 @@ class QBLEDevice : public QObject
 public:
     explicit QBLEDevice(QObject *parent = nullptr);
 
-    QBLEService *service(const QString &uuid);
+    QBLEService *service(const QString &uuid) const;
 
     void setDevicePath(const QString &path);
     virtual QString pair();
