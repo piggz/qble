@@ -39,7 +39,7 @@ protected:
 private:
     QString m_devicePath;
     QMap<QString, QBLEService*> m_serviceMap;
-    QDBusInterface *m_deviceInterface;
+    QDBusInterface *m_deviceInterface = nullptr;
 
     void introspect();
     Q_SLOT void onPairFinished(QDBusPendingCallWatcher *call);

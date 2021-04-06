@@ -1,9 +1,7 @@
 #include "qbleservice.h"
 #include <QtXml/QtXml>
-QBLEService::QBLEService(const QString &uuid,const QString &path,  QObject *parent) : QObject(parent)
+QBLEService::QBLEService(const QString &uuid,const QString &path,  QObject *parent) : QObject(parent), m_serviceUUID(uuid), m_servicePath(path)
 {
-    m_serviceUUID = uuid;
-    m_servicePath = path;
     m_serviceInterface = new QDBusInterface("org.bluez", m_servicePath, "org.bluez.GattService1", QDBusConnection::systemBus());
     introspect();
 }
@@ -126,7 +124,7 @@ void QBLEService::introspect()
         }
     }
 
-    foreach(QBLECharacteristic* c, m_characteristicMap.values()) {
+    for (auto  c: m_characteristicMap) {
         connect(c, &QBLECharacteristic::characteristicChanged, this, &QBLEService::characteristicChangedInt);
         connect(c, &QBLECharacteristic::characteristicRead, this, &QBLEService::characteristicReadInt);
     }
