@@ -18,9 +18,9 @@ AdapterModel::AdapterModel()
     if (reply.isError())
         return;
 
-    foreach (const QDBusObjectPath &path, reply.value().keys()) {
+    for (const QDBusObjectPath &path: static_cast<const QList<QDBusObjectPath>>(reply.value().keys())) {
         const InterfaceList ifaceList = reply.value().value(path);
-        foreach (const QString &iface, ifaceList.keys()) {
+        for (const QString &iface: static_cast<const QList<QString>>(ifaceList.keys())) {
             if (iface == QStringLiteral("org.bluez.Adapter1")) {
                m_devices << path.path();
                m_deviceNames << ifaceList.value(iface).value(QStringLiteral("Name")).toString();
