@@ -16,8 +16,7 @@ public:
     QBLEService *service(const QString &uuid) const;
 
     void setDevicePath(const QString &path);
-    virtual QString pair();
-    virtual void pairAsync();
+    virtual void pair();
 
     virtual void connectToDevice();
     virtual void disconnectFromDevice();
@@ -25,7 +24,6 @@ public:
     QString devicePath() const;
 
     Q_SIGNAL void propertiesChanged(const QString &interface, const QVariantMap &map, const QStringList &list);
-    Q_SIGNAL void pairFinished(const QString &message);
     Q_SIGNAL void operationRunningChanged();
 
     Q_INVOKABLE bool operationRunning();
@@ -42,7 +40,6 @@ private:
     QDBusInterface *m_deviceInterface = nullptr;
 
     void introspect();
-    Q_SLOT void onPairFinished(QDBusPendingCallWatcher *call);
     Q_SLOT void onPropertiesChangedInt(const QString &interface, const QVariantMap &map, const QStringList &list);
 };
 
