@@ -5,6 +5,7 @@ HEADERS += \
     $$PWD/qbledevice.h \
     $$PWD/qbleservice.h \
     $$PWD/qblecharacteristic.h \
+    $$PWD/qbledescriptor.h \
     $$PWD/bluezadapter.h
 
 SOURCES += \
@@ -12,5 +13,6 @@ SOURCES += \
     $$PWD/qbledevice.cpp \
     $$PWD/qbleservice.cpp \
     $$PWD/qblecharacteristic.cpp \
+    $$PWD/qbledescriptor.cpp \
     $$PWD/bluezadapter.cpp
 

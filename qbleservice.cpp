@@ -88,6 +88,26 @@ void QBLEService::writeAsync(const QString &c, const QByteArray &value)
     }
 }
 
+void QBLEService::writeDescriptorAsync(const QString &c, const QString &d, const QByteArray &value)
+{
+    qDebug() << Q_FUNC_INFO << c << d << value;
+
+    QBLECharacteristic *ch = characteristic(c);
+
+    if (!ch) {
+        qWarning() << "Unable to get characteristic";
+    }
+
+    QBLEDescriptor *desc = ch->descriptor(d);
+
+    if (!desc) {
+        qWarning() << "Unable to get descriptor";
+    }
+
+    desc->writeAsync(value);
+}
+
+
 QByteArray QBLEService::readValue(const QString &c)
 {
     qDebug() << "Reading from " << c;
@@ -112,8 +132,6 @@ void QBLEService::introspect()
 
     QDomNodeList nodes = doc.elementsByTagName("node");
 
-    qDebug() << nodes.count() << "nodes";
-
     for (int x = 0; x < nodes.count(); x++)
     {
         QDomElement node = nodes.at(x).toElement();
@@ -131,7 +149,7 @@ void QBLEService::introspect()
         connect(c, &QBLECharacteristic::characteristicRead, this, &QBLEService::characteristicReadInt);
     }
 
-    qDebug() << "Introspect:characteristics:" << m_characteristicMap.keys();
+    qDebug() << Q_FUNC_INFO << "characteristics" << m_characteristicMap.keys();
 }
 
 void QBLEService::onPropertiesChanged(const QString &interface, const QVariantMap &map, const QStringList &list)
