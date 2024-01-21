@@ -31,6 +31,8 @@ public:
     void writeValue(const QString &characteristic, const QByteArray &value);
     void writeAsync(const QString &characteristic, const QByteArray &value);
 
+    void writeDescriptorAsync(const QString &characteristic, const QString &descriptor, const QByteArray &value);
+
     QByteArray readValue(const QString &characteristic);
     void readAsync(const QString &characteristic) const;
     void enableNotification(const QString &c);
