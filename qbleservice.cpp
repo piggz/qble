@@ -96,12 +96,14 @@ void QBLEService::writeDescriptorAsync(const QString &c, const QString &d, const
 
     if (!ch) {
         qWarning() << "Unable to get characteristic";
+        return;
     }
 
     QBLEDescriptor *desc = ch->descriptor(d);
 
     if (!desc) {
         qWarning() << "Unable to get descriptor";
+        return;
     }
 
     desc->writeAsync(value);
