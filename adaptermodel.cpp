@@ -55,3 +55,16 @@ QHash<int, QByteArray> AdapterModel::roleNames() const
 
     return names;
 }
+
+QVariantMap AdapterModel::get(int row) const {
+    if (row < 0 || row >= m_devices.size()) {
+        return QVariantMap();
+    }
+
+    QVariantMap data;
+    data["path"] = m_devices.at(row);
+    data["itemText"] = data["path"];
+    data["name"] = m_deviceNames.at(row);
+
+    return data;
+}
