@@ -19,6 +19,8 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     QHash<int, QByteArray> 	roleNames() const override;
 
+    Q_INVOKABLE QVariantMap get(int row) const;
+
 private:
      QDBusInterface *m_objectManager = nullptr;
      QStringList m_devices;
