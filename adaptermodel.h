@@ -12,6 +12,8 @@ public:
     enum Roles {
         AdapterPath = Qt::UserRole + 1,
         AdapterName,
+        AdapterAlias,
+        AdapterAddress,
         ItemText
     };
 
@@ -25,6 +27,8 @@ private:
      QDBusInterface *m_objectManager = nullptr;
      QStringList m_devices;
      QStringList m_deviceNames;
+     QStringList m_deviceAliases;
+     QStringList m_deviceAddresses;
 
 };
 

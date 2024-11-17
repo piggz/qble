@@ -24,6 +24,8 @@ AdapterModel::AdapterModel()
             if (iface == QStringLiteral("org.bluez.Adapter1")) {
                m_devices << path.path();
                m_deviceNames << ifaceList.value(iface).value(QStringLiteral("Name")).toString();
+               m_deviceAliases << ifaceList.value(iface).value(QStringLiteral("Alias")).toString();
+               m_deviceAddresses << ifaceList.value(iface).value(QStringLiteral("Address")).toString();
             }
         }
     }
@@ -41,6 +43,10 @@ QVariant AdapterModel::data(const QModelIndex &index, int role) const
             return m_devices.at(index.row());
         } else if (role == AdapterName) {
             return m_deviceNames.at(index.row());
+        } else if (role == AdapterAlias) {
+            return m_deviceAliases.at(index.row());
+        } else if (role == AdapterAddress) {
+            return m_deviceAddresses.at(index.row());
         }
     }
     return QVariant();
@@ -51,6 +57,8 @@ QHash<int, QByteArray> AdapterModel::roleNames() const
     QHash<int, QByteArray> names;
     names[AdapterPath] = "path";
     names[AdapterName] = "name";
+    names[AdapterAlias] = "alias";
+    names[AdapterAddress] = "address";
     names[ItemText] = "itemText";
 
     return names;
@@ -65,6 +73,8 @@ QVariantMap AdapterModel::get(int row) const {
     data["path"] = m_devices.at(row);
     data["itemText"] = data["path"];
     data["name"] = m_deviceNames.at(row);
+    data["alias"] = m_deviceAliases.at(row);
+    data["address"] = m_deviceAddresses.at(row);
 
     return data;
 }
