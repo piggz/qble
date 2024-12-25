@@ -6,12 +6,11 @@ QBLEDevice::QBLEDevice(QObject *parent) : QObject(parent)
 
 void QBLEDevice::setDevicePath(const QString &path)
 {
-    qDebug() << "QBLEDevice::setDevicePath";
 
     m_devicePath = path;
     m_deviceInterface = new QDBusInterface("org.bluez", m_devicePath, "org.bluez.Device1", QDBusConnection::systemBus());
 
-    qDebug() << m_deviceInterface->isValid();
+    qDebug() << Q_FUNC_INFO << path <<  m_deviceInterface->isValid();
     QStringList argumentMatch;
     argumentMatch << "org.bluez.Device1";
 
