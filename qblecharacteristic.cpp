@@ -103,7 +103,7 @@ void QBLECharacteristic::introspect()
         }
     }
 
-    qDebug() << Q_FUNC_INFO << "descriptors" << m_descriptorMap.keys();
+    qDebug() << Q_FUNC_INFO << m_uuid << "descriptors" << m_descriptorMap.keys();
 
 }
 
