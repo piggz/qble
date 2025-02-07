@@ -16,6 +16,7 @@ public:
     Q_INVOKABLE QString matchDevice(const QString &match);
     Q_INVOKABLE bool deviceIsValid(const QString &path);
     Q_INVOKABLE QString deviceName(const QString &path);
+    Q_INVOKABLE void removeDevice(const QString &device);
 
 private:
     QString m_adapterPath = "/org/bluez/hci0";

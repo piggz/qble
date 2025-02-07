@@ -123,3 +123,17 @@ QString BluezAdapter::deviceName(const QString &search)
     }
     return QString();
 }
+
+void BluezAdapter::removeDevice(const QString &device) {
+    qDebug() << Q_FUNC_INFO << device;
+
+    if (m_deviceInterface && !m_adapterPath.isEmpty()) {
+
+        QDBusMessage reply = m_deviceInterface->call(QStringLiteral("RemoveDevice"), QVariant::fromValue(QDBusObjectPath(device)));
+
+        if (reply.type() == QDBusMessage::ErrorMessage) {
+            qWarning() << "Failed to remove device:" << reply.errorMessage();
+        }
+
+    }
+}
