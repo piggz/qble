@@ -67,11 +67,7 @@ QVariant QBLEDevice::deviceProperty(const char *name) const
     return QVariant();
 }
 
-bool QBLEDevice::operationRunning()
+QMap<QString, QBLEService *> QBLEDevice::services()
 {
-    bool running = false;
-    foreach(QBLEService* service, m_serviceMap) {
-        running |= service->operationRunning();
-    }
-    return running;
+    return m_serviceMap;
 }

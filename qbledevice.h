@@ -24,9 +24,6 @@ public:
     QString devicePath() const;
 
     Q_SIGNAL void propertiesChanged(const QString &interface, const QVariantMap &map, const QStringList &list);
-    Q_SIGNAL void operationRunningChanged();
-
-    Q_INVOKABLE bool operationRunning();
 
 protected:
     Q_SIGNAL void servicesResolved();
@@ -34,6 +31,7 @@ protected:
     void addService(const QString &uuid, QBLEService *service);
     QVariant deviceProperty(const char *name) const;
 
+    QMap<QString, QBLEService*> services();
 private:
     QString m_devicePath;
     QMap<QString, QBLEService*> m_serviceMap;

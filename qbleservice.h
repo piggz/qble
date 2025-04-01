@@ -39,8 +39,6 @@ public:
     void disableNotification(const QString &c);
 
     Q_SIGNAL void message(const QString &text);
-    Q_INVOKABLE virtual bool operationRunning();
-    Q_SIGNAL void operationRunningChanged();
 
 protected:
     Q_SIGNAL void propertiesChanged(QString, QVariantMap, QStringList);
