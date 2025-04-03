@@ -176,8 +176,3 @@ void QBLEService::readAsync(const QString &c) const
         qDebug() << "Unable to get characteristic";
     }
 }
-
-bool QBLEService::operationRunning()
-{
-    return false;
-}
