@@ -13,6 +13,8 @@
 #define UCHAR_TO_BYTEARRAY(uch) \
     QByteArray(reinterpret_cast<const char*>(&uch), 1)
 
+#define UCHARVAL_TO_BYTEARRAY(uch) \
+    QByteArray(1, (char)(uch))
 
 class QBLEService : public QObject
 {

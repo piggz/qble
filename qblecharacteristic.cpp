@@ -29,6 +29,7 @@ void QBLECharacteristic::onPropertiesChanged(const QString &interface, const QVa
 
 void QBLECharacteristic::writeValue(const QByteArray &val) const
 {
+    qDebug() << Q_FUNC_INFO << val.toHex(':');
     m_characteristicInterface->call("WriteValue", val, QVariantMap());
 }
 
