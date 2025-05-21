@@ -28,8 +28,8 @@ void QBLEDevice::pair()
     QObject::connect(watcher, &QDBusPendingCallWatcher::finished, this,
                      [&](QDBusPendingCallWatcher *w) {
         QDBusPendingReply<void> reply(*w);
-        qDebug() << reply.error().message();
         if (reply.error().type() != QDBusError::NoError) {
+            qDebug() << reply.error().message();
             Q_EMIT error(reply.error().message());
         }
         w->deleteLater();
@@ -46,8 +46,8 @@ void QBLEDevice::connectToDevice()
     QObject::connect(watcher, &QDBusPendingCallWatcher::finished, this,
                      [&](QDBusPendingCallWatcher *w) {
         QDBusPendingReply<void> reply(*w);
-        qDebug() << reply.error().message();
         if (reply.error().type() != QDBusError::NoError) {
+            qDebug() << reply.error().message();
             Q_EMIT error(reply.error().message());
         }
         w->deleteLater();
@@ -64,8 +64,8 @@ void QBLEDevice::disconnectFromDevice()
         QObject::connect(watcher, &QDBusPendingCallWatcher::finished, this,
                          [&](QDBusPendingCallWatcher *w) {
             QDBusPendingReply<void> reply(*w);
-            qDebug() << reply.error().message();
             if (reply.error().type() != QDBusError::NoError) {
+                qDebug() << reply.error().message();
                 Q_EMIT error(reply.error().message());
             }
             w->deleteLater();
