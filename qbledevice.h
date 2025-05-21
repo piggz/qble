@@ -24,6 +24,7 @@ public:
     QString devicePath() const;
 
     Q_SIGNAL void propertiesChanged(const QString &interface, const QVariantMap &map, const QStringList &list);
+    Q_SIGNAL void error(const QString &message);
 
 protected:
     Q_SIGNAL void servicesResolved();

@@ -22,21 +22,54 @@ void QBLEDevice::pair()
 {
     qDebug() << "QBLEDevice::pair";
 
-    m_deviceInterface->asyncCall("Pair");
+    QDBusPendingCall pcall = m_deviceInterface->asyncCall("Pair");
+
+    auto watcher = new QDBusPendingCallWatcher(pcall, this);
+    QObject::connect(watcher, &QDBusPendingCallWatcher::finished, this,
+                     [&](QDBusPendingCallWatcher *w) {
+        QDBusPendingReply<void> reply(*w);
+        qDebug() << reply.error().message();
+        if (reply.error().type() != QDBusError::NoError) {
+            Q_EMIT error(reply.error().message());
+        }
+        w->deleteLater();
+    });
 }
 
 void QBLEDevice::connectToDevice()
 {
     qDebug() << "QBLEDevice::connectToDevice";
 
-    m_deviceInterface->asyncCall("Connect");
+    QDBusPendingCall pcall = m_deviceInterface->asyncCall("Connect");
+
+    auto watcher = new QDBusPendingCallWatcher(pcall, this);
+    QObject::connect(watcher, &QDBusPendingCallWatcher::finished, this,
+                     [&](QDBusPendingCallWatcher *w) {
+        QDBusPendingReply<void> reply(*w);
+        qDebug() << reply.error().message();
+        if (reply.error().type() != QDBusError::NoError) {
+            Q_EMIT error(reply.error().message());
+        }
+        w->deleteLater();
+    });
 }
 
 void QBLEDevice::disconnectFromDevice()
 {
     qDebug() << "QBLEDevice::disconnectFromDevice";
 
-    m_deviceInterface->call("Disconnect");
+    QDBusPendingCall pcall = m_deviceInterface->asyncCall("Disconnect");
+
+    auto watcher = new QDBusPendingCallWatcher(pcall, this);
+        QObject::connect(watcher, &QDBusPendingCallWatcher::finished, this,
+                         [&](QDBusPendingCallWatcher *w) {
+            QDBusPendingReply<void> reply(*w);
+            qDebug() << reply.error().message();
+            if (reply.error().type() != QDBusError::NoError) {
+                Q_EMIT error(reply.error().message());
+            }
+            w->deleteLater();
+        });
 }
 
 QBLEService* QBLEDevice::service(const QString &uuid) const
