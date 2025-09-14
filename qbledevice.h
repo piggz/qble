@@ -21,6 +21,7 @@ public:
 
     virtual void connectToDevice();
     virtual void disconnectFromDevice();
+    virtual void trust(bool arg);
 
     QString devicePath() const;
 
