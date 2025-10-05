@@ -1,6 +1,7 @@
 #include "qbleagent.h"
 
 void QBLEAgent::registerAgent() {
+    qDebug() << Q_FUNC_INFO;
     bool ok = QDBusConnection::systemBus().registerObject("/qble/agent", this, QDBusConnection::ExportAllSlots);
     if (!ok) {
         qWarning() << "Could not register agent object on DBus!" << QDBusConnection::systemBus().lastError();
@@ -16,7 +17,7 @@ void QBLEAgent::registerAgent() {
 
     QDBusReply<void> reply2 = agentManager.call(QStringLiteral("RequestDefaultAgent"), QVariant::fromValue(QDBusObjectPath("/qble/agent")));
     if (!reply2.isValid()) {
-        qWarning() << "Failed to register agent:" << reply2.error().message();
+        qWarning() << "Failed to register default agent:" << reply2.error().message();
         return;
     }
 
@@ -77,9 +78,13 @@ void QBLEAgent::RequestConfirmation(const QDBusObjectPath &device, uint passkey)
     m_wait_for_response_loop = &loop;
     emit UIRequestConfirmation(deviceName, device.path(), passkey);
     loop.exec();
-    qDebug() << Q_FUNC_INFO << "accepted" << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"  << m_request_confirmation_response.value_or(false);
+    qDebug() << Q_FUNC_INFO << "accepted" << m_request_confirmation_response.value_or(false);
+
     if (m_request_confirmation_response.value_or(false)) {
         emit pairingAccepted(device.path());
+        return;
+    } else {
+        throw QDBusError(QDBusError::AccessDenied, "User rejected pairing");
     }
 
 }
