@@ -8,7 +8,7 @@ void QBLEAgent::registerAgent() {
     }
 
     QDBusInterface agentManager("org.bluez", "/org/bluez", "org.bluez.AgentManager1", QDBusConnection::systemBus());
-    QDBusReply<void> reply = agentManager.call(QStringLiteral("RegisterAgent"), QVariant::fromValue(QDBusObjectPath("/qble/agent")), QVariant::fromValue(QString("KeyboardDisplay")));
+    QDBusReply<void> reply = agentManager.call(QStringLiteral("RegisterAgent"), QVariant::fromValue(QDBusObjectPath("/qble/agent")), QVariant::fromValue(QString(""))); // "KeyboardDisplay" | "NoInputNoOutput" | "DisplayYesNo"
     if (!reply.isValid()) {
         qWarning() << "Failed to register agent:" << reply.error().message();
         return;
