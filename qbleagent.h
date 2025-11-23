@@ -23,13 +23,13 @@ public slots:
     QString RequestPinCode(const QDBusObjectPath &device);
     void RequestConfirmation(const QDBusObjectPath &device, uint passkey);
     void RequestAuthorization(const QDBusObjectPath &device)  {
-        qDebug() << "TODO TODO TODO TODO TODO TODO TODO TODO TODO" << Q_FUNC_INFO << device.path() ;}
+        qWarning() << "TODO: Not implemented" << Q_FUNC_INFO << device.path() ;}
     void AuthorizeService(const QDBusObjectPath &device, const QString &in1) {
-        qDebug() << "TODO TODO TODO TODO TODO TODO TODO TODO TODO" << Q_FUNC_INFO << device.path() << in1;}
+        qWarning() << "TODO: Not implemented" << Q_FUNC_INFO << device.path() << in1;}
     void DisplayPasskey(const QDBusObjectPath &device, uint in1, ushort in2) {
-        qDebug() << "TODO TODO TODO TODO TODO TODO TODO TODO TODO" << Q_FUNC_INFO << device.path() << in1 << in2;}
+        qWarning() << "TODO: Not implemented" << Q_FUNC_INFO << device.path() << in1 << in2;}
     void DisplayPinCode(const QDBusObjectPath &device, const QString &in1) {
-        qDebug() << "TODO TODO TODO TODO TODO TODO TODO TODO TODO" << Q_FUNC_INFO << device.path() << in1 ;}
+        qWarning() << "TODO: Not implemented" << Q_FUNC_INFO << device.path() << in1 ;}
 
     QString getDeviceName(const QDBusObjectPath& devicePath) ;
 
