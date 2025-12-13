@@ -126,7 +126,11 @@ void QBLEAgent::requestConfirmationResponse(const bool accepted) {
         qDebug() << Q_FUNC_INFO << "User accepted pairing";
 
         QDBusMessage reply = m_pending_confirmation_call.createReply();
-        bus.send(reply);
+        if (!bus.send(reply)) {
+            qWarning() << Q_FUNC_INFO << "Failed to send reply:" << bus.lastError().name() << bus.lastError().message();
+        } else {
+            qDebug() << Q_FUNC_INFO << "Reply sent successfully";
+        }
 
         const QString device = m_pending_confirmation_call.arguments().at(0).toString();
         qDebug() << Q_FUNC_INFO << device;
@@ -140,7 +144,12 @@ void QBLEAgent::requestConfirmationResponse(const bool accepted) {
                 "org.bluez.Error.Rejected",
                 "User rejected pairing"
                 );
-        bus.send(err);
+
+        if (!bus.send(err)) {
+            qWarning() << Q_FUNC_INFO << "Failed to send error reply:" << bus.lastError().name() << bus.lastError().message();
+        } else {
+            qDebug() << Q_FUNC_INFO << "Error reply sent successfully";
+        }
     }
 
     m_pending_confirmation_call = QDBusMessage();
