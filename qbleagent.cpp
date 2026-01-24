@@ -36,8 +36,9 @@ uint QBLEAgent::RequestPasskey(const QDBusObjectPath &device) {
 
     m_request_passkey_response = std::nullopt;
     QString deviceName = getDeviceName(device);
-    if (deviceName.isEmpty())
+    if (deviceName.isEmpty()) {
         deviceName = device.path();
+    }
     QEventLoop loop;
     m_wait_for_response_loop = &loop;
     emit UIRequestPasskey(deviceName, device.path());
@@ -53,8 +54,9 @@ QString QBLEAgent::RequestPinCode(const QDBusObjectPath &device) {
 
     m_request_pincode_response = "";
     QString deviceName = getDeviceName(device);
-    if (deviceName.isEmpty())
+    if (deviceName.isEmpty()) {
         deviceName = device.path();
+    }
     QEventLoop loop;
     m_wait_for_response_loop = &loop;
     emit UIRequestPinCode(deviceName, device.path());
@@ -70,17 +72,20 @@ QString QBLEAgent::RequestPinCode(const QDBusObjectPath &device) {
 void QBLEAgent::RequestConfirmation(const QDBusObjectPath &device, uint passkey) {
     m_request_confirmation_response = std::nullopt;
     QString deviceName = getDeviceName(device);
-    if (deviceName.isEmpty())
+    if (deviceName.isEmpty()) {
         deviceName = device.path();
+    }
     QEventLoop loop;
     m_wait_for_response_loop = &loop;
     emit UIRequestConfirmation(deviceName, device.path(), passkey);
     loop.exec();
-    if (m_request_confirmation_response.has_value()) {
-        emit pairingAccepted(device.path());
-    }
     qDebug() << Q_FUNC_INFO << "response" << m_request_passkey_response.value_or(-1);
-
+    if (m_request_confirmation_response.has_value() && m_request_confirmation_response.value()) {
+        emit pairingAccepted(device.path());
+        return;
+    } else {
+        throw QDBusError(QDBusError::AccessDenied, "User rejected pairing");
+    }
 }
 
 QString QBLEAgent::getDeviceName(const QDBusObjectPath& devicePath) {
