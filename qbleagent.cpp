@@ -68,24 +68,18 @@ QString QBLEAgent::RequestPinCode(const QDBusObjectPath &device) {
 }
 
 void QBLEAgent::RequestConfirmation(const QDBusObjectPath &device, uint passkey) {
-    qDebug() << Q_FUNC_INFO << "RequestConfirmation called!" << device.path() << passkey;
     m_request_confirmation_response = std::nullopt;
     QString deviceName = getDeviceName(device);
-    if (deviceName.isEmpty()) {
+    if (deviceName.isEmpty())
         deviceName = device.path();
-    }
     QEventLoop loop;
     m_wait_for_response_loop = &loop;
     emit UIRequestConfirmation(deviceName, device.path(), passkey);
     loop.exec();
-    qDebug() << Q_FUNC_INFO << "accepted" << m_request_confirmation_response.value_or(false);
-
-    if (m_request_confirmation_response.value_or(false)) {
+    if (m_request_confirmation_response.has_value()) {
         emit pairingAccepted(device.path());
-        return;
-    } else {
-        throw QDBusError(QDBusError::AccessDenied, "User rejected pairing");
     }
+    qDebug() << Q_FUNC_INFO << "response" << m_request_passkey_response.value_or(-1);
 
 }
 
@@ -121,9 +115,9 @@ void QBLEAgent::requestPinCodeResponse(const QString& response) {
     }
 }
 
-void QBLEAgent::requestConfirmationResponse(const bool accepted) {
-    m_request_confirmation_response = accepted;
-    if (m_wait_for_response_loop) {
+void QBLEAgent::requestConfirmationResponse(const bool response) {
+    m_request_confirmation_response = response;
+        if (m_wait_for_response_loop) {
         m_wait_for_response_loop->quit();
         m_wait_for_response_loop = nullptr;
     }
