@@ -5,7 +5,7 @@
 #include <QEventLoop>
 #include <optional>
 
-class QBLEAgent : public QObject {
+class QBLEAgent : public QObject, protected QDBusContext {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "org.bluez.Agent1")
 public:
@@ -16,8 +16,8 @@ public:
 
 
 public slots:
-    void Release() {}
-    void Cancel() {}
+    void Release();
+    void Cancel();
 
     uint RequestPasskey(const QDBusObjectPath &device);
     QString RequestPinCode(const QDBusObjectPath &device);
