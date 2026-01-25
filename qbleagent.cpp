@@ -1,5 +1,21 @@
 #include "qbleagent.h"
 
+void QBLEAgent::Release() {
+    // BlueZ tells the agent to release resources (e.g., when unregistering).
+    if (m_wait_for_response_loop) {
+        m_wait_for_response_loop->quit();
+        m_wait_for_response_loop = nullptr;
+    }
+}
+
+void QBLEAgent::Cancel() {
+    // BlueZ cancels an in-flight request; unblock any nested wait loop.
+    if (m_wait_for_response_loop) {
+        m_wait_for_response_loop->quit();
+        m_wait_for_response_loop = nullptr;
+    }
+}
+
 void QBLEAgent::registerAgent() {
     qDebug() << Q_FUNC_INFO;
     bool ok = QDBusConnection::systemBus().registerObject("/qble/agent", this, QDBusConnection::ExportAllSlots);
@@ -79,13 +95,22 @@ void QBLEAgent::RequestConfirmation(const QDBusObjectPath &device, uint passkey)
     m_wait_for_response_loop = &loop;
     emit UIRequestConfirmation(deviceName, device.path(), passkey);
     loop.exec();
-    qDebug() << Q_FUNC_INFO << "response" << m_request_passkey_response.value_or(-1);
+
+    qDebug() << Q_FUNC_INFO << "response" << (m_request_confirmation_response.has_value()
+                                                 ? (m_request_confirmation_response.value() ? "accepted" : "rejected")
+                                                 : "canceled/timeout");
+
     if (m_request_confirmation_response.has_value() && m_request_confirmation_response.value()) {
         emit pairingAccepted(device.path());
         return;
-    } else {
-        throw QDBusError(QDBusError::AccessDenied, "User rejected pairing");
     }
+
+    // IMPORTANT: Don't throw exceptions here — we must send a DBus reply (error) back to BlueZ.
+    if (!m_request_confirmation_response.has_value()) {
+        sendErrorReply(QStringLiteral("org.bluez.Error.Canceled"), QStringLiteral("Pairing canceled"));
+        return;
+    }
+    sendErrorReply(QStringLiteral("org.bluez.Error.Rejected"), QStringLiteral("User rejected pairing"));
 }
 
 QString QBLEAgent::getDeviceName(const QDBusObjectPath& devicePath) {
