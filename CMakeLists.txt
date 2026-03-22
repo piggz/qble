@@ -23,6 +23,8 @@ else()
     endif()
 endif()
 
+message(STATUS "qble: using Qt ${QT_VERSION_MAJOR}")
+
 target_include_directories(qble PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(qble PUBLIC
