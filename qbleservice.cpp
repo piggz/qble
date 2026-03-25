@@ -2,7 +2,7 @@
 #include <QtXml/QtXml>
 #include <utility>
 
-QBLEService::QBLEService(const QString &uuid,const QString &path,  QObject *parent) : QObject(parent), m_serviceUUID(uuid), m_servicePath(path)
+QBLEService::QBLEService(const QString &uuid, const QString &path, QObject *parent) : QObject(parent), m_servicePath(path), m_serviceUUID(uuid)
 {
     m_serviceInterface = new QDBusInterface("org.bluez", m_servicePath, "org.bluez.GattService1", QDBusConnection::systemBus());
     introspect();
@@ -23,7 +23,12 @@ void QBLEService::characteristicReadInt(const QString &characteristic, const QBy
 void QBLEService::characteristicWrittenInt(const QString &characteristic, const QByteArray &value)
 {
     //qDebug() << "characteristicWrittenInt:" << characteristic << value.size() << value.toHex();
-    emit characteristicRead(characteristic, value);
+    emit characteristicWritten(characteristic, value);
+}
+
+void QBLEService::characteristicWriteFailedInt(const QString &characteristic, const QString &errorMessage)
+{
+    emit characteristicWriteFailed(characteristic, errorMessage);
 }
 
 void QBLEService::descriptorWrittenInt(const QString &descriptor, const QByteArray &value)
@@ -64,19 +69,26 @@ QString QBLEService::serviceUUID() const
     return m_serviceUUID;
 }
 
-void QBLEService::writeValue(const QString &c, const QByteArray &value)
+bool QBLEService::writeValue(const QString &c,
+                             const QByteArray &value,
+                             QString *errorMessage)
 {
     qDebug() << "Writing to " << c << ":" << value.toHex();
     QBLECharacteristic *ch = characteristic(c);
 
     if (ch) {
-        ch->writeValue(value);
+        return ch->writeValue(value, errorMessage);
     } else {
         qDebug() << "Unable to get characteristic";
+        if (errorMessage != nullptr) {
+            *errorMessage = QStringLiteral("Unable to get characteristic");
+        }
     }
+
+    return false;
 }
 
-void QBLEService::writeAsync(const QString &c, const QByteArray &value)
+void QBLEService::writeAsync(const QString &c, const QByteArray &value) const
 {
     qDebug() << "Async Writing to " << c << ":" << value.toHex();
     QBLECharacteristic *ch = characteristic(c);
@@ -86,6 +98,20 @@ void QBLEService::writeAsync(const QString &c, const QByteArray &value)
     } else {
         qDebug() << "Unable to get characteristic";
     }
+}
+
+bool QBLEService::writeAsyncChecked(const QString &c, const QByteArray &value)
+{
+    qDebug() << "Async Writing to " << c << ":" << value.toHex();
+    QBLECharacteristic *ch = characteristic(c);
+
+    if (ch) {
+        return ch->writeAsyncChecked(value);
+    } else {
+        qDebug() << "Unable to get characteristic";
+    }
+
+    return false;
 }
 
 void QBLEService::writeDescriptorAsync(const QString &c, const QString &d, const QByteArray &value)
@@ -149,6 +175,8 @@ void QBLEService::introspect()
     for (const auto  &c: static_cast<const QMap<QString, QBLECharacteristic* >>(m_characteristicMap)) {
         connect(c, &QBLECharacteristic::characteristicChanged, this, &QBLEService::characteristicChangedInt);
         connect(c, &QBLECharacteristic::characteristicRead, this, &QBLEService::characteristicReadInt);
+        connect(c, &QBLECharacteristic::characteristicWritten, this, &QBLEService::characteristicWrittenInt);
+        connect(c, &QBLECharacteristic::characteristicWriteFailed, this, &QBLEService::characteristicWriteFailedInt);
     }
 
     qDebug() << Q_FUNC_INFO << "characteristics" << m_characteristicMap.keys();

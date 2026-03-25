@@ -24,14 +24,19 @@ public:
 
     Q_SIGNAL void characteristicChanged(const QString &c, const QByteArray &value);
     Q_SIGNAL void characteristicRead(const QString &c, const QByteArray &value);
+    Q_SIGNAL void characteristicWritten(const QString &c, const QByteArray &value);
+    Q_SIGNAL void characteristicWriteFailed(const QString &c, const QString &errorMessage);
     Q_SIGNAL void descriptorWritten(const QString &d, const QByteArray &value);
 
     QString serviceUUID() const;
 
     QBLECharacteristic *characteristic(const QString &c) const;
 
-    void writeValue(const QString &characteristic, const QByteArray &value);
-    void writeAsync(const QString &characteristic, const QByteArray &value);
+    bool writeValue(const QString &characteristic,
+                    const QByteArray &value,
+                    QString *errorMessage = nullptr);
+    void writeAsync(const QString &characteristic, const QByteArray &value) const;
+    bool writeAsyncChecked(const QString &characteristic, const QByteArray &value);
 
     void writeDescriptorAsync(const QString &characteristic, const QString &descriptor, const QByteArray &value);
 
@@ -57,6 +62,7 @@ private:
     Q_SLOT void characteristicChangedInt(const QString &characteristic, const QByteArray &value);
     Q_SLOT void characteristicReadInt(const QString &characteristic, const QByteArray &value);
     Q_SLOT void characteristicWrittenInt(const QString &characteristic, const QByteArray &value);
+    Q_SLOT void characteristicWriteFailedInt(const QString &characteristic, const QString &errorMessage);
     Q_SLOT void descriptorWrittenInt(const QString &descriptor, const QByteArray &value);
 
     Q_SLOT void onPropertiesChanged(const QString &interface, const QVariantMap &map, const QStringList &list);

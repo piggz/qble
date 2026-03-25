@@ -27,15 +27,41 @@ void QBLECharacteristic::onPropertiesChanged(const QString &interface, const QVa
     }
 }
 
-void QBLECharacteristic::writeValue(const QByteArray &val) const
+bool QBLECharacteristic::writeValue(const QByteArray &val, QString *errorMessage) const
 {
-//    qDebug() << Q_FUNC_INFO << val.toHex();
-    m_characteristicInterface->call("WriteValue", val, QVariantMap());
+    //qDebug() << Q_FUNC_INFO << val.toHex();
+    QDBusReply<void> reply = m_characteristicInterface->call("WriteValue", val, QVariantMap());
+    if (!reply.isValid()) {
+        const QString message = reply.error().message();
+        qWarning() << Q_FUNC_INFO << message;
+        if (errorMessage != nullptr) {
+            *errorMessage = message;
+        }
+        return false;
+    }
+
+    if (errorMessage != nullptr) {
+        errorMessage->clear();
+    }
+
+    return true;
 }
 
 void QBLECharacteristic::writeAsync(const QByteArray &val) const
 {
     m_characteristicInterface->asyncCall("WriteValue", val, QVariantMap());
+}
+
+bool QBLECharacteristic::writeAsyncChecked(const QByteArray &val)
+{
+    QDBusPendingCall async = m_characteristicInterface->asyncCall("WriteValue", val, QVariantMap());
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(async, this);
+    watcher->setProperty("value", val);
+
+    QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),
+                     this, SLOT(writeFinished(QDBusPendingCallWatcher*)));
+
+    return true;
 }
 
 QByteArray QBLECharacteristic::readValue() const
@@ -63,6 +89,20 @@ void QBLECharacteristic::readFinished(QDBusPendingCallWatcher *call)
         m_value = reply.value();
         emit characteristicRead(m_uuid, m_value);
     }
+    call->deleteLater();
+}
+
+void QBLECharacteristic::writeFinished(QDBusPendingCallWatcher *call)
+{
+    QDBusPendingReply<void> reply = *call;
+    const QByteArray value = call->property("value").toByteArray();
+
+    if (reply.isError()) {
+        emit characteristicWriteFailed(m_uuid, reply.error().message());
+    } else {
+        emit characteristicWritten(m_uuid, value);
+    }
+
     call->deleteLater();
 }
 
