@@ -36,6 +36,7 @@ target_link_libraries(qble PUBLIC
 set(SOURCES
     adaptermodel.cpp
     bluezadapter.cpp
+    qbleagent.cpp
     qblecharacteristic.cpp
     qbledescriptor.cpp
     qbledevice.cpp
@@ -45,6 +46,7 @@ set(SOURCES
 set(HEADERS
     adaptermodel.h
     bluezadapter.h
+    qbleagent.h
     qblecharacteristic.h
     qbledescriptor.h
     qbledevice.h
