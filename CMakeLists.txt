@@ -40,6 +40,9 @@ set(SOURCES
     qbledescriptor.cpp
     qbledevice.cpp
     qbleservice.cpp
+    qblelocalcharacteristic.cpp
+    qblelocalservice.cpp
+    qblelocalapplication.cpp
 )
 
 set(HEADERS
@@ -49,6 +52,9 @@ set(HEADERS
     qbledescriptor.h
     qbledevice.h
     qbleservice.h
+    qblelocalcharacteristic.h
+    qblelocalservice.h
+    qblelocalapplication.h
 )
 
 target_sources(qble PUBLIC ${SOURCES} ${HEADERS})
