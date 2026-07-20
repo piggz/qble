@@ -72,6 +72,13 @@ void QBLEDevice::disconnectFromDevice()
         });
 }
 
+void QBLEDevice::trust(bool arg)
+{
+    QDBusInterface dev("org.bluez", m_devicePath, "org.freedesktop.DBus.Properties", QDBusConnection::systemBus());
+    QVariant qvar_arg = QVariant::fromValue(QDBusVariant(QVariant(arg)));
+    dev.call("Set", "org.bluez.Device1", "Trusted", qvar_arg);
+}
+
 QBLEService* QBLEDevice::service(const QString &uuid) const
 {
     return m_serviceMap.value(uuid, nullptr);
