@@ -6,6 +6,12 @@ BluezAdapter::BluezAdapter(QObject *parent) : QObject(parent)
     qDebug() << "BluezAdapter::BluezAdapter";
 }
 
+BluezAdapter::~BluezAdapter()
+{
+    delete m_deviceInterface;
+    m_deviceInterface = nullptr;
+}
+
 void BluezAdapter::setAdapterPath(const QString &path)
 {
     qDebug() << "BluezAdapter::setAdapterPath:" << path;

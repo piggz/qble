@@ -4,8 +4,9 @@ QBLEDevice::QBLEDevice(QObject *parent) : QObject(parent)
 {
 }
 
-void QBLEDevice::setDevicePath(const QString &path)
+void QBLEDevice::setDevicePath(const QString& path)
 {
+    qDebug() << Q_FUNC_INFO << path;
 
     m_devicePath = path;
     m_deviceInterface = new QDBusInterface("org.bluez", m_devicePath, "org.bluez.Device1", QDBusConnection::systemBus());
@@ -20,7 +21,11 @@ void QBLEDevice::setDevicePath(const QString &path)
 
 void QBLEDevice::pair()
 {
-    qDebug() << "QBLEDevice::pair";
+    qDebug() << Q_FUNC_INFO;
+
+    if (!m_deviceInterface) {
+        return;
+    }
 
     QDBusPendingCall pcall = m_deviceInterface->asyncCall("Pair");
 
@@ -40,6 +45,10 @@ void QBLEDevice::connectToDevice()
 {
     qDebug() << "QBLEDevice::connectToDevice";
 
+    if (!m_deviceInterface) {
+        return;
+    }
+
     QDBusPendingCall pcall = m_deviceInterface->asyncCall("Connect");
 
     auto watcher = new QDBusPendingCallWatcher(pcall, this);
@@ -57,6 +66,10 @@ void QBLEDevice::connectToDevice()
 void QBLEDevice::disconnectFromDevice()
 {
     qDebug() << "QBLEDevice::disconnectFromDevice";
+
+    if (!m_deviceInterface) {
+        return;
+    }
 
     QDBusPendingCall pcall = m_deviceInterface->asyncCall("Disconnect");
 

@@ -9,6 +9,7 @@ class BluezAdapter : public QObject
     Q_OBJECT
 public:
     explicit BluezAdapter(QObject *parent = nullptr);
+    ~BluezAdapter();
 
     Q_INVOKABLE void setAdapterPath(const QString &path);
     Q_INVOKABLE void startDiscovery();
