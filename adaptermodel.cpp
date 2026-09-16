@@ -31,6 +31,11 @@ AdapterModel::AdapterModel()
     }
 }
 
+AdapterModel::~AdapterModel()
+{
+    delete m_objectManager;
+}
+
 int AdapterModel::rowCount(const QModelIndex &parent) const
 {
     return m_devices.count();

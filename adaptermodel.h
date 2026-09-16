@@ -9,6 +9,8 @@ class AdapterModel : public QAbstractListModel
     Q_OBJECT
 public:
     AdapterModel();
+    ~AdapterModel();
+
     enum Roles {
         AdapterPath = Qt::UserRole + 1,
         AdapterName,
