@@ -12,6 +12,7 @@ class QBLEDevice : public QObject
     Q_OBJECT
 public:
     explicit QBLEDevice(QObject *parent = nullptr);
+    ~QBLEDevice();
 
     QBLEService *service(const QString &uuid) const;
 

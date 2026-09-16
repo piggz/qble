@@ -4,16 +4,29 @@ QBLEDevice::QBLEDevice(QObject *parent) : QObject(parent)
 {
 }
 
+QBLEDevice::~QBLEDevice()
+{
+    if (m_deviceInterface) {
+        delete m_deviceInterface;
+    }
+}
+
 void QBLEDevice::setDevicePath(const QString& path)
 {
     qDebug() << Q_FUNC_INFO << path;
+
+    QStringList argumentMatch;
+    argumentMatch << "org.bluez.Device1";
+
+    if (m_deviceInterface && (path != m_devicePath)) {
+        delete m_deviceInterface;
+        QDBusConnection::systemBus().disconnect("org.bluez", m_devicePath, "org.freedesktop.DBus.Properties","PropertiesChanged", argumentMatch, QString(), this, SLOT(onPropertiesChangedInt(QString, QVariantMap, QStringList)));
+    }
 
     m_devicePath = path;
     m_deviceInterface = new QDBusInterface("org.bluez", m_devicePath, "org.bluez.Device1", QDBusConnection::systemBus());
 
     qDebug() << Q_FUNC_INFO << path <<  m_deviceInterface->isValid();
-    QStringList argumentMatch;
-    argumentMatch << "org.bluez.Device1";
 
     QDBusConnection::systemBus().connect("org.bluez", m_devicePath, "org.freedesktop.DBus.Properties","PropertiesChanged", argumentMatch, QString(),
                                          this, SLOT(onPropertiesChangedInt(QString, QVariantMap, QStringList)));
