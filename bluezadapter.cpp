@@ -9,13 +9,17 @@ BluezAdapter::BluezAdapter(QObject *parent) : QObject(parent)
 BluezAdapter::~BluezAdapter()
 {
     delete m_deviceInterface;
-    m_deviceInterface = nullptr;
 }
 
 void BluezAdapter::setAdapterPath(const QString &path)
 {
     qDebug() << "BluezAdapter::setAdapterPath:" << path;
 
+    if (path == m_adapterPath) {
+        return;
+    }
+
+    delete m_deviceInterface;
     m_adapterPath = path;
     m_deviceInterface = new QDBusInterface("org.bluez", m_adapterPath, "org.bluez.Adapter1", QDBusConnection::systemBus());
 }
