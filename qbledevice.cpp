@@ -15,6 +15,10 @@ void QBLEDevice::setDevicePath(const QString& path)
 {
     qDebug() << Q_FUNC_INFO << path;
 
+    if (path.isEmpty()) {
+        return;
+    }
+
     QStringList argumentMatch;
     argumentMatch << "org.bluez.Device1";
 

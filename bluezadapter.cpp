@@ -15,7 +15,7 @@ void BluezAdapter::setAdapterPath(const QString &path)
 {
     qDebug() << "BluezAdapter::setAdapterPath:" << path;
 
-    if (path == m_adapterPath) {
+    if (path == m_adapterPath || path.isEmpty()) {
         return;
     }
 
