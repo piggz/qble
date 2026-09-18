@@ -28,8 +28,9 @@ void BluezAdapter::startDiscovery()
 {
     qDebug() << "BluezAdapter::startDiscovery";
 
-    if (!m_deviceInterface && !m_adapterPath.isEmpty()) {
-        setAdapterPath(m_adapterPath);
+    if (!m_deviceInterface) {
+        qDebug() << "No adapter interface.  Call setAdapterPath first";
+        return;
     }
 
     QDBusMessage reply = m_deviceInterface->call("StartDiscovery");
@@ -40,8 +41,9 @@ void BluezAdapter::stopDiscovery()
 {
     qDebug() << "BluezAdapter::stopDiscovery";
 
-    if (!m_deviceInterface && !m_adapterPath.isEmpty()) {
-        setAdapterPath(m_adapterPath);
+    if (!m_deviceInterface) {
+        qDebug() << "No adapter interface.  Call setAdapterPath first";
+        return;
     }
 
     QDBusMessage reply = m_deviceInterface->call("StopDiscovery");
