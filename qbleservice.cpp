@@ -10,27 +10,27 @@ QBLEService::QBLEService(const QString &uuid, const QString &path, QObject *pare
     introspect();
 }
 
-void QBLEService::characteristicChangedInt(const QString &characteristic, const QByteArray &value)
+void QBLEService::characteristicChangedInt(const QString &ch, const QByteArray &value)
 {
     //qDebug() << "characteristicChangedInt:" << characteristic << value.size() << value.toHex();
-    emit characteristicChanged(characteristic, value);
+    emit characteristicChanged(ch, value);
 }
 
-void QBLEService::characteristicReadInt(const QString &characteristic, const QByteArray &value)
+void QBLEService::characteristicReadInt(const QString &ch, const QByteArray &value)
 {
     //qDebug() << "characteristicReadInt:" << characteristic << value.size() << value.toHex();
-    emit characteristicRead(characteristic, value);
+    emit characteristicRead(ch, value);
 }
 
-void QBLEService::characteristicWrittenInt(const QString &characteristic, const QByteArray &value)
+void QBLEService::characteristicWrittenInt(const QString &ch, const QByteArray &value)
 {
     //qDebug() << "characteristicWrittenInt:" << characteristic << value.size() << value.toHex();
-    emit characteristicWritten(characteristic, value);
+    emit characteristicWritten(ch, value);
 }
 
-void QBLEService::characteristicWriteFailedInt(const QString &characteristic, const QString &errorMessage)
+void QBLEService::characteristicWriteFailedInt(const QString &ch, const QString &errorMessage)
 {
-    emit characteristicWriteFailed(characteristic, errorMessage);
+    emit characteristicWriteFailed(ch, errorMessage);
 }
 
 void QBLEService::descriptorWrittenInt(const QString &descriptor, const QByteArray &value)
@@ -44,7 +44,7 @@ void QBLEService::enableNotification(const QString &c)
 {
     qDebug() << "Starting notify for " << c;
 
-    QBLECharacteristic *ch = characteristic(c);
+    const QBLECharacteristic *ch = characteristic(c);
 
     if (ch) {
         ch->startNotify();
@@ -57,7 +57,7 @@ void QBLEService::disableNotification(const QString &c)
 {
     qDebug() << "Stopping notify for " << c;
 
-    QBLECharacteristic *ch = characteristic(c);
+    const QBLECharacteristic *ch = characteristic(c);
 
     if (ch) {
         ch->stopNotify();
@@ -76,7 +76,7 @@ bool QBLEService::writeValue(const QString &c,
                              QString *errorMessage)
 {
     qDebug() << "Writing to " << c << ":" << value.toHex();
-    QBLECharacteristic *ch = characteristic(c);
+    const QBLECharacteristic *ch = characteristic(c);
 
     if (ch) {
         return ch->writeValue(value, errorMessage);
@@ -93,7 +93,7 @@ bool QBLEService::writeValue(const QString &c,
 void QBLEService::writeAsync(const QString &c, const QByteArray &value) const
 {
     qDebug() << "Async Writing to " << c << ":" << value.toHex();
-    QBLECharacteristic *ch = characteristic(c);
+    const QBLECharacteristic *ch = characteristic(c);
 
     if (ch) {
         ch->writeAsync(value);
@@ -120,14 +120,14 @@ void QBLEService::writeDescriptorAsync(const QString &c, const QString &d, const
 {
     qDebug() << Q_FUNC_INFO << c << d << value;
 
-    QBLECharacteristic *ch = characteristic(c);
+    const QBLECharacteristic *ch = characteristic(c);
 
     if (!ch) {
         qWarning() << "Unable to get characteristic";
         return;
     }
 
-    QBLEDescriptor *desc = ch->descriptor(d);
+    const QBLEDescriptor *desc = ch->descriptor(d);
 
     if (!desc) {
         qWarning() << "Unable to get descriptor";
@@ -142,7 +142,7 @@ QByteArray QBLEService::readValue(const QString &c)
 {
     qDebug() << "Reading from " << c;
 
-    QBLECharacteristic *ch = characteristic(c);
+    const QBLECharacteristic *ch = characteristic(c);
 
     if (ch) {
         return ch->readValue();

@@ -76,12 +76,12 @@ QVariantMap AdapterModel::get(int row) const {
         return QVariantMap();
     }
 
-    QVariantMap data;
-    data["path"] = m_devices.at(row);
-    data["itemText"] = data["path"];
-    data["name"] = m_deviceNames.at(row);
-    data["alias"] = m_deviceAliases.at(row);
-    data["address"] = m_deviceAddresses.at(row);
+    QVariantMap d;
+    d["path"] = m_devices.at(row);
+    d["itemText"] = d["path"];
+    d["name"] = m_deviceNames.at(row);
+    d["alias"] = m_deviceAliases.at(row);
+    d["address"] = m_deviceAddresses.at(row);
 
-    return data;
+    return d;
 }

@@ -116,9 +116,9 @@ QString QBLEDevice::devicePath() const
     return m_devicePath;
 }
 
-void QBLEDevice::addService(const QString &uuid, QBLEService *service)
+void QBLEDevice::addService(const QString &uuid, QBLEService *s)
 {
-    m_serviceMap[uuid] = service;
+    m_serviceMap[uuid] = s;
 }
 
 void QBLEDevice::onPropertiesChangedInt(const QString &interface, const QVariantMap &map, const QStringList &list)

@@ -39,7 +39,7 @@ void QBLEDescriptor::writeAsync(const QByteArray &val) const
 void QBLEDescriptor::readAsync()
 {
     QDBusPendingCall async = m_descriptorInterface->asyncCall("ReadValue", QVariantMap());
-    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(async, this);
+    const QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(async, this);
 
     QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),
                      this, SLOT(readFinished(QDBusPendingCallWatcher*)));

@@ -85,7 +85,7 @@ ManagedObjectList QBLELocalApplication::GetManagedObjects()
 {
     ManagedObjectList result;
 
-    for (QBLELocalService *svc : std::as_const(m_services)) {
+    for (const QBLELocalService *svc : std::as_const(m_services)) {
         // --- Service entry ---
         InterfaceList svcInterfaces;
         QVariantMap svcProps;
@@ -98,7 +98,7 @@ ManagedObjectList QBLELocalApplication::GetManagedObjects()
 
         // --- Characteristic entries ---
         const auto characteristics = svc->characteristics();
-        for (QBLELocalCharacteristic *ch : characteristics) {
+        for (const QBLELocalCharacteristic *ch : characteristics) {
             InterfaceList chInterfaces;
             QVariantMap chProps;
             chProps.insert(QStringLiteral("Service"),  QVariant::fromValue(ch->servicePath()));

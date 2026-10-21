@@ -75,7 +75,7 @@ QByteArray QBLECharacteristic::readValue() const
 void QBLECharacteristic::readAsync()
 {
     QDBusPendingCall async = m_characteristicInterface->asyncCall("ReadValue", QVariantMap());
-    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(async, this);
+    const QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(async, this);
 
     QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),
                      this, SLOT(readFinished(QDBusPendingCallWatcher*)));
@@ -96,12 +96,12 @@ void QBLECharacteristic::readFinished(QDBusPendingCallWatcher *call)
 void QBLECharacteristic::writeFinished(QDBusPendingCallWatcher *call)
 {
     QDBusPendingReply<void> reply = *call;
-    const QByteArray value = call->property("value").toByteArray();
+    const QByteArray v = call->property("value").toByteArray();
 
     if (reply.isError()) {
         emit characteristicWriteFailed(m_uuid, reply.error().message());
     } else {
-        emit characteristicWritten(m_uuid, value);
+        emit characteristicWritten(m_uuid, v);
     }
 
     call->deleteLater();
