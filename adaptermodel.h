@@ -2,7 +2,7 @@
 #define ADAPTERMODEL_H
 
 #include <QAbstractListModel>
-#include <QtDBus>
+#include <QDBusInterface>
 
 class AdapterModel : public QAbstractListModel
 {

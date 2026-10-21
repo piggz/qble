@@ -1,5 +1,9 @@
 #include "qbledescriptor.h"
 
+#include <QDBusPendingReply>
+#include <QDBusReply>
+#include <QDebug>
+
 QBLEDescriptor::QBLEDescriptor(const QString &path, QObject *parent) : QObject(parent)
 {
     m_descriptorInterface = new QDBusInterface("org.bluez", path, "org.bluez.GattDescriptor1", QDBusConnection::systemBus());

@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QVariantMap>
-#include <QtDBus>
+#include <QDBusInterface>
 
 class QBLEDescriptor : public QObject
 {

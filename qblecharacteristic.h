@@ -1,10 +1,11 @@
 #ifndef QBLECHARACTERISTIC_H
 #define QBLECHARACTERISTIC_H
 
+#include "qbledescriptor.h"
+
 #include <QObject>
 #include <QVariantMap>
-#include <QtDBus>
-#include "qbledescriptor.h"
+#include <QDBusInterface>
 
 class QBLECharacteristic : public QObject
 {

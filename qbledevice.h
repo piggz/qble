@@ -4,7 +4,7 @@
 #include "qbleservice.h"
 
 #include <QObject>
-#include <QtDBus>
+#include <QDBusInterface>
 #include <QVariantMap>
 
 class QBLEDevice : public QObject

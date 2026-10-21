@@ -2,7 +2,7 @@
 #define QBLELOCALCHARACTERISTIC_H
 
 #include <QObject>
-#include <QtDBus>
+#include <QDBusInterface>
 
 // Forward declaration
 class QBLELocalService;
@@ -18,10 +18,10 @@ class QBLELocalCharacteristic : public QObject
 {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "org.bluez.GattCharacteristic1")
-    Q_PROPERTY(QDBusObjectPath Service READ servicePath)
-    Q_PROPERTY(QString UUID READ uuid)
-    Q_PROPERTY(QStringList Flags READ flags)
-    Q_PROPERTY(QList<QDBusObjectPath> Descriptors READ descriptorPaths)
+    Q_PROPERTY(QDBusObjectPath Service READ servicePath CONSTANT)
+    Q_PROPERTY(QString UUID READ uuid CONSTANT)
+    Q_PROPERTY(QStringList Flags READ flags CONSTANT)
+    Q_PROPERTY(QList<QDBusObjectPath> Descriptors READ descriptorPaths CONSTANT)
 
 public:
     explicit QBLELocalCharacteristic(QDBusConnection bus, unsigned int index, const QString &uuid, const QStringList &flags, QBLELocalService *service, QObject *parent = nullptr);

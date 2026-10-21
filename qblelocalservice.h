@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QList>
 #include <QString>
-#include <QtDBus>
+#include <QDBusInterface>
 
 class QBLELocalCharacteristic;
 
@@ -21,9 +21,9 @@ class QBLELocalService : public QObject
 {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "org.bluez.GattService1")
-    Q_PROPERTY(QString UUID READ uuid)
-    Q_PROPERTY(bool Primary READ primary)
-    Q_PROPERTY(QList<QDBusObjectPath> Characteristics READ characteristicPaths)
+    Q_PROPERTY(QString UUID READ uuid CONSTANT)
+    Q_PROPERTY(bool Primary READ primary CONSTANT)
+    Q_PROPERTY(QList<QDBusObjectPath> Characteristics READ characteristicPaths CONSTANT)
 
 public:
     explicit QBLELocalService(QDBusConnection bus, unsigned int index, const QString &uuid, const QString &appPath, QObject *parent = nullptr);

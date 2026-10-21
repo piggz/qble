@@ -4,7 +4,7 @@
 #include "qblecharacteristic.h"
 
 #include <QObject>
-#include <QtDBus>
+#include <QDomDocument>
 #include <QVariantMap>
 
 #define UCHARARR_TO_BYTEARRAY(uarray) \

@@ -1,6 +1,8 @@
 #include "qbleservice.h"
-#include <QtXml/QtXml>
-#include <utility>
+
+#include <QDomDocument>
+#include <QDebug>
+#include <QDBusReply>
 
 QBLEService::QBLEService(const QString &uuid, const QString &path, QObject *parent) : QObject(parent), m_servicePath(path), m_serviceUUID(uuid)
 {

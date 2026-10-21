@@ -1,5 +1,7 @@
 #include "bluezadapter.h"
-#include <QtXml/QtXml>
+#include <QDomDocument>
+#include <QDebug>
+#include <QDBusReply>
 
 BluezAdapter::BluezAdapter(QObject *parent) : QObject(parent)
 {

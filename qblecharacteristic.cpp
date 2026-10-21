@@ -1,6 +1,7 @@
 #include "qblecharacteristic.h"
-#include <QtXml/QtXml>
-
+#include <QDomDocument>
+#include <QDBusReply>
+#include <QDebug>
 
 QBLECharacteristic::QBLECharacteristic(const QString &path, QObject *parent) : QObject(parent)
 {

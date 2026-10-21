@@ -1,4 +1,6 @@
 #include "adaptermodel.h"
+#include <qdbusmetatype.h>
+#include <qdbuspendingreply.h>
 
 typedef QMap<QString, QVariantMap> InterfaceList;
 typedef QMap<QDBusObjectPath, InterfaceList> ManagedObjectList;

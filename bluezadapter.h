@@ -2,7 +2,7 @@
 #define BLUEZADAPTER_H
 
 #include <QObject>
-#include <QtDBus>
+#include <QDBusInterface>
 
 class BluezAdapter : public QObject
 {

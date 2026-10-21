@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QList>
 #include <QString>
-#include <QtDBus>
+#include <QDBusInterface>
 
 class QBLELocalService;
 class QBLELocalCharacteristic;

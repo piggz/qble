@@ -1,5 +1,8 @@
 #include "qbledevice.h"
 
+#include <QDebug>
+#include <QDBusPendingReply>
+
 QBLEDevice::QBLEDevice(QObject *parent) : QObject(parent)
 {
 }
