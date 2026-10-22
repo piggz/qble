@@ -2,6 +2,8 @@
 
 #include <QDBusPendingReply>
 #include <QDBusReply>
+#include <QDBusPendingCall>
+#include <QDBusPendingCallWatcher>
 #include <QDebug>
 
 QBLEDescriptor::QBLEDescriptor(const QString &path, QObject *parent) : QObject(parent)
