@@ -1,7 +1,10 @@
 #include "qblecharacteristic.h"
+
 #include <QDomDocument>
 #include <QDBusReply>
 #include <QDebug>
+#include <QDBusPendingCall>
+#include <QDBusPendingCallWatcher>
 
 QBLECharacteristic::QBLECharacteristic(const QString &path, QObject *parent) : QObject(parent)
 {
