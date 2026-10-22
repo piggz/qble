@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QVariantMap>
 #include <QDBusInterface>
+#include <QDBusPendingCallWatcher>
 
 class QBLEDescriptor : public QObject
 {

@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QVariantMap>
 #include <QDBusInterface>
+#include <QDBusPendingCallWatcher>
 
 class QBLECharacteristic : public QObject
 {
