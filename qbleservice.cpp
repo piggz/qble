@@ -39,6 +39,20 @@ void QBLEService::descriptorWrittenInt(const QString &descriptor, const QByteArr
     emit descriptorWritten(descriptor, value);
 }
 
+// Like enableNotification(), but no notification gets lost. Falls back to StartNotify.
+bool QBLEService::acquireNotification(const QString& c)
+{
+    QBLECharacteristic* ch = characteristic(c);
+    if (!ch) {
+        qWarning() << Q_FUNC_INFO << "Characteristic not found" << c;
+        return false;
+    }
+    if (ch->acquireNotify()) {
+        return true;
+    }
+    ch->startNotify();
+    return false;
+}
 
 void QBLEService::enableNotification(const QString &c)
 {

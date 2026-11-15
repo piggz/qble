@@ -6,6 +6,9 @@
 #include <QDBusPendingCall>
 #include <QDBusPendingCallWatcher>
 
+#include <QDBusUnixFileDescriptor>
+#include <unistd.h>
+
 QBLECharacteristic::QBLECharacteristic(const QString &path, QObject *parent) : QObject(parent)
 {
     m_characteristicInterface = new QDBusInterface("org.bluez", path, "org.bluez.GattCharacteristic1", QDBusConnection::systemBus());
@@ -118,6 +121,66 @@ void QBLECharacteristic::startNotify() const
 void QBLECharacteristic::stopNotify() const
 {
     m_characteristicInterface->call("StopNotify");
+}
+
+// BlueZ sends every notification as one packet on the socket. With StartNotify, notifications that come
+// close together can be merged into one PropertiesChanged signal, and the earlier values are lost.
+bool QBLECharacteristic::acquireNotify()
+{
+    if (m_notifyFd >= 0) {
+        return true;
+    }
+
+    QDBusMessage reply = m_characteristicInterface->call("AcquireNotify", QVariantMap());
+    if (reply.type() == QDBusMessage::ErrorMessage || reply.arguments().count() < 2) {
+        qWarning() << Q_FUNC_INFO << m_uuid << reply.errorMessage();
+        return false;
+    }
+
+    QDBusUnixFileDescriptor fd = reply.arguments().at(0).value<QDBusUnixFileDescriptor>();
+    if (!fd.isValid()) {
+        qWarning() << Q_FUNC_INFO << m_uuid << "Invalid file descriptor";
+        return false;
+    }
+
+    // QDBusUnixFileDescriptor closes its descriptor when it goes away, so keep a copy.
+    m_notifyFd = ::dup(fd.fileDescriptor());
+    m_notifyMtu = reply.arguments().at(1).toInt();
+    m_notifyNotifier = new QSocketNotifier(m_notifyFd, QSocketNotifier::Read, this);
+    connect(m_notifyNotifier, &QSocketNotifier::activated, this, &QBLECharacteristic::readNotifySocket);
+    qDebug() << Q_FUNC_INFO << m_uuid << "MTU" << m_notifyMtu;
+    return true;
+}
+
+QBLECharacteristic::~QBLECharacteristic()
+{
+    releaseNotify();
+}
+
+void QBLECharacteristic::releaseNotify()
+{
+    if (m_notifyFd < 0) {
+        return;
+    }
+    delete m_notifyNotifier;
+    m_notifyNotifier = nullptr;
+    ::close(m_notifyFd);
+    m_notifyFd = -1;
+}
+
+void QBLECharacteristic::readNotifySocket()
+{
+    QByteArray buffer(qMax(m_notifyMtu, 512), 0);
+    ssize_t length = ::read(m_notifyFd, buffer.data(), buffer.size());
+    if (length <= 0) {
+        // The device disconnected or BlueZ released the socket.
+        qDebug() << Q_FUNC_INFO << m_uuid << "Notify socket closed";
+        releaseNotify();
+        return;
+    }
+    buffer.resize(length);
+    m_value = buffer;
+    emit characteristicChanged(m_uuid, m_value);
 }
 
 QByteArray QBLECharacteristic::value() const

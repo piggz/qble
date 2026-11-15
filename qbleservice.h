@@ -43,6 +43,7 @@ public:
     QByteArray readValue(const QString &characteristic);
     void readAsync(const QString &characteristic) const;
     void enableNotification(const QString &c);
+    bool acquireNotification(const QString& c);
     void disableNotification(const QString &c);
 
     Q_SIGNAL void message(const QString &text);
