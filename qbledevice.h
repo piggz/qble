@@ -39,8 +39,11 @@ private:
     QString m_devicePath;
     QMap<QString, QBLEService*> m_serviceMap;
     QDBusInterface *m_deviceInterface = nullptr;
+    bool m_pairCallPending = false;
+    bool m_holdUntilDisconnected = false;
 
     void introspect();
+    void emitDeviceStateAfterPairing();
     Q_SLOT void onPropertiesChangedInt(const QString &interface, const QVariantMap &map, const QStringList &list);
 };
 

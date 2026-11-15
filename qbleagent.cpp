@@ -1,19 +1,16 @@
 #include "qbleagent.h"
 
-void QBLEAgent::Release() {
+void QBLEAgent::Release()
+{
     // BlueZ tells the agent to release resources (e.g., when unregistering).
-    if (m_wait_for_response_loop) {
-        m_wait_for_response_loop->quit();
-        m_wait_for_response_loop = nullptr;
-    }
+    m_pendingRequest = QDBusMessage();
 }
 
-void QBLEAgent::Cancel() {
-    // BlueZ cancels an in-flight request; unblock any nested wait loop.
-    if (m_wait_for_response_loop) {
-        m_wait_for_response_loop->quit();
-        m_wait_for_response_loop = nullptr;
-    }
+void QBLEAgent::Cancel()
+{
+    // BlueZ cancels the request (timeout or pairing failed); a late answer from the UI is ignored.
+    qDebug() << Q_FUNC_INFO << m_pendingRequest.member();
+    m_pendingRequest = QDBusMessage();
 }
 
 void QBLEAgent::registerAgent() {
@@ -47,70 +44,72 @@ void QBLEAgent::unregisterAgent() {
     QDBusConnection::systemBus().unregisterObject("/qble/agent");
 }
 
-uint QBLEAgent::RequestPasskey(const QDBusObjectPath &device) {
-    qDebug() << Q_FUNC_INFO << "RequestPasskey called!" << device.path();
-
-    m_request_passkey_response = std::nullopt;
-    QString deviceName = getDeviceName(device);
-    if (deviceName.isEmpty()) {
-        deviceName = device.path();
-    }
-    QEventLoop loop;
-    m_wait_for_response_loop = &loop;
-    emit UIRequestPasskey(deviceName, device.path());
-    loop.exec();
-    if (m_request_passkey_response.has_value()) {
-        emit pairingAccepted(device.path());
-    }
-    qDebug() << Q_FUNC_INFO << "response" << m_request_passkey_response.value_or(0);
-    return m_request_passkey_response.value_or(0);
+uint QBLEAgent::RequestPasskey(const QDBusObjectPath& device)
+{
+    qDebug() << Q_FUNC_INFO << device.path();
+    holdRequest(device);
+    emit UIRequestPasskey(deviceNameOrPath(device), device.path());
+    return 0; // not sent, the reply goes from requestPasskeyResponse()
 }
 
-QString QBLEAgent::RequestPinCode(const QDBusObjectPath &device) {
-
-    m_request_pincode_response = "";
-    QString deviceName = getDeviceName(device);
-    if (deviceName.isEmpty()) {
-        deviceName = device.path();
-    }
-    QEventLoop loop;
-    m_wait_for_response_loop = &loop;
-    emit UIRequestPinCode(deviceName, device.path());
-    loop.exec();
-    if (m_request_pincode_response != "") {
-        emit pairingAccepted(device.path());
-    }
-    qDebug() << Q_FUNC_INFO << "response" << m_request_pincode_response;
-    return m_request_pincode_response;
-
+QString QBLEAgent::RequestPinCode(const QDBusObjectPath& device)
+{
+    qDebug() << Q_FUNC_INFO << device.path();
+    holdRequest(device);
+    emit UIRequestPinCode(deviceNameOrPath(device), device.path());
+    return QString(); // not sent, the reply goes from requestPinCodeResponse()
 }
 
-void QBLEAgent::RequestConfirmation(const QDBusObjectPath &device, uint passkey) {
-    m_request_confirmation_response = std::nullopt;
+void QBLEAgent::RequestConfirmation(const QDBusObjectPath& device, uint passkey)
+{
+    qDebug() << Q_FUNC_INFO << device.path() << passkey;
+    holdRequest(device);
+    emit UIRequestConfirmation(deviceNameOrPath(device), device.path(), passkey);
+}
+
+void QBLEAgent::DisplayPasskey(const QDBusObjectPath& device, uint passkey, ushort entered)
+{
+    qDebug() << Q_FUNC_INFO << device.path() << passkey << entered;
+    // BlueZ calls this again for each key typed on the device; the UI shows the passkey once
+    if (entered == 0) {
+        emit UIDisplayPasskey(deviceNameOrPath(device), device.path(), passkey);
+    }
+}
+
+// The reply to BlueZ is sent later, when the UI answers. The D-Bus slot returns at once, so nothing blocks meanwhile.
+void QBLEAgent::holdRequest(const QDBusObjectPath& device)
+{
+    setDelayedReply(true);
+    m_pendingRequest = message();
+    m_pendingDevicePath = device.path();
+}
+
+QString QBLEAgent::deviceNameOrPath(const QDBusObjectPath& device)
+{
     QString deviceName = getDeviceName(device);
     if (deviceName.isEmpty()) {
         deviceName = device.path();
     }
-    QEventLoop loop;
-    m_wait_for_response_loop = &loop;
-    emit UIRequestConfirmation(deviceName, device.path(), passkey);
-    loop.exec();
+    return deviceName;
+}
 
-    qDebug() << Q_FUNC_INFO << "response" << (m_request_confirmation_response.has_value()
-                                                 ? (m_request_confirmation_response.value() ? "accepted" : "rejected")
-                                                 : "canceled/timeout");
-
-    if (m_request_confirmation_response.has_value() && m_request_confirmation_response.value()) {
-        emit pairingAccepted(device.path());
-        return;
+// Returns false when no request with this method waits, for example after Cancel()
+bool QBLEAgent::isPending(const QString& member) const
+{
+    if (m_pendingRequest.type() != QDBusMessage::MethodCallMessage || m_pendingRequest.member() != member) {
+        qWarning() << Q_FUNC_INFO << "no pending" << member;
+        return false;
     }
+    return true;
+}
 
-    // IMPORTANT: Don't throw exceptions here — we must send a DBus reply (error) back to BlueZ.
-    if (!m_request_confirmation_response.has_value()) {
-        sendErrorReply(QStringLiteral("org.bluez.Error.Canceled"), QStringLiteral("Pairing canceled"));
-        return;
+void QBLEAgent::sendReply(const QDBusMessage& reply, bool accepted)
+{
+    QDBusConnection::systemBus().send(reply);
+    m_pendingRequest = QDBusMessage();
+    if (accepted) {
+        emit pairingAccepted(m_pendingDevicePath);
     }
-    sendErrorReply(QStringLiteral("org.bluez.Error.Rejected"), QStringLiteral("User rejected pairing"));
 }
 
 QString QBLEAgent::getDeviceName(const QDBusObjectPath& devicePath) {
@@ -129,26 +128,36 @@ QString QBLEAgent::getDeviceName(const QDBusObjectPath& devicePath) {
     return QString();
 }
 
-void QBLEAgent::requestPasskeyResponse(const uint response) {
-    m_request_passkey_response = response;
-    if (m_wait_for_response_loop) {
-        m_wait_for_response_loop->quit();
-        m_wait_for_response_loop = nullptr;
+void QBLEAgent::requestPasskeyResponse(const uint response)
+{
+    qDebug() << Q_FUNC_INFO << response;
+    if (isPending("RequestPasskey")) {
+        sendReply(m_pendingRequest.createReply(QVariant::fromValue(response)), true);
     }
 }
 
-void QBLEAgent::requestPinCodeResponse(const QString& response) {
-    m_request_pincode_response = response;
-    if (m_wait_for_response_loop) {
-        m_wait_for_response_loop->quit();
-        m_wait_for_response_loop = nullptr;
+void QBLEAgent::requestPinCodeResponse(const QString& response)
+{
+    qDebug() << Q_FUNC_INFO << response;
+    if (!isPending("RequestPinCode")) {
+        return;
     }
+    if (response.isEmpty()) {
+        sendReply(m_pendingRequest.createErrorReply("org.bluez.Error.Rejected", "No pin code entered"), false);
+        return;
+    }
+    sendReply(m_pendingRequest.createReply(response), true);
 }
 
-void QBLEAgent::requestConfirmationResponse(const bool response) {
-    m_request_confirmation_response = response;
-        if (m_wait_for_response_loop) {
-        m_wait_for_response_loop->quit();
-        m_wait_for_response_loop = nullptr;
+void QBLEAgent::requestConfirmationResponse(const bool response)
+{
+    qDebug() << Q_FUNC_INFO << response;
+    if (!isPending("RequestConfirmation")) {
+        return;
     }
+    if (!response) {
+        sendReply(m_pendingRequest.createErrorReply("org.bluez.Error.Rejected", "User rejected pairing"), false);
+        return;
+    }
+    sendReply(m_pendingRequest.createReply(), true);
 }

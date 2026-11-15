@@ -2,8 +2,6 @@
 #define QBLEAGENT__H
 #include <QObject>
 #include <QtDBus>
-#include <QEventLoop>
-#include <optional>
 
 class QBLEAgent : public QObject, protected QDBusContext {
     Q_OBJECT
@@ -26,8 +24,7 @@ public slots:
         qWarning() << "TODO: Not implemented" << Q_FUNC_INFO << device.path() ;}
     void AuthorizeService(const QDBusObjectPath &device, const QString &in1) {
         qWarning() << "TODO: Not implemented" << Q_FUNC_INFO << device.path() << in1;}
-    void DisplayPasskey(const QDBusObjectPath &device, uint in1, ushort in2) {
-        qWarning() << "TODO: Not implemented" << Q_FUNC_INFO << device.path() << in1 << in2;}
+    void DisplayPasskey(const QDBusObjectPath& device, uint passkey, ushort entered);
     void DisplayPinCode(const QDBusObjectPath &device, const QString &in1) {
         qWarning() << "TODO: Not implemented" << Q_FUNC_INFO << device.path() << in1 ;}
 
@@ -41,16 +38,18 @@ signals:
     void UIRequestPasskey(const QString &deviceName, const QString &devicePath);
     void UIRequestPinCode(const QString &deviceName, const QString &devicePath);
     void UIRequestConfirmation(const QString &deviceName, const QString &devicePath, uint passkey);
+    void UIDisplayPasskey(const QString& deviceName, const QString& devicePath, uint passkey);
 
     void pairingAccepted(const QString &devicePath);
 
 private:
+    void holdRequest(const QDBusObjectPath& device);
+    QString deviceNameOrPath(const QDBusObjectPath& device);
+    bool isPending(const QString& member) const;
+    void sendReply(const QDBusMessage& reply, bool accepted);
 
-    std::optional<uint> m_request_passkey_response;
-    QString m_request_pincode_response;
-    std::optional<bool> m_request_confirmation_response;
-
-    QEventLoop *m_wait_for_response_loop = nullptr;
+    QDBusMessage m_pendingRequest;
+    QString m_pendingDevicePath;
 };
 
 #endif // QBLEAGENT__H
