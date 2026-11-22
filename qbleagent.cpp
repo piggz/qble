@@ -76,7 +76,9 @@ void QBLEAgent::DisplayPasskey(const QDBusObjectPath& device, uint passkey, usho
     }
 }
 
-// The reply to BlueZ is sent later, when the UI answers. The D-Bus slot returns at once, so nothing blocks meanwhile.
+// BlueZ finishes the pairing only after this reply, and the reply needs the answer from the UI.
+// So this slot returns at once and the *Response() slots send the reply later, while the main thread keeps running.
+// A blocking D-Bus call on the main thread during pairing still deadlocks, see QBLEDevice::onPropertiesChangedInt().
 void QBLEAgent::holdRequest(const QDBusObjectPath& device)
 {
     setDelayedReply(true);
@@ -112,6 +114,8 @@ void QBLEAgent::sendReply(const QDBusMessage& reply, bool accepted)
     }
 }
 
+// Reads the Name property of a BlueZ device. Returns an empty string if the device has no name or is unknown.
+// Example: "/org/bluez/hci0/dev_C8_F1_2A_4B_7E_01" -> "InfiniTime"
 QString QBLEAgent::getDeviceName(const QDBusObjectPath& devicePath) {
     QDBusInterface deviceIface(
         "org.bluez", devicePath.path(),
