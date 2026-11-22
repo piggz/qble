@@ -1,10 +1,15 @@
 #include "qblelocalcharacteristic.h"
 #include "qblelocalservice.h"
 
+#include <QDBusMessage>
 #include <QDebug>
 
-QBLELocalCharacteristic::QBLELocalCharacteristic(QDBusConnection bus, unsigned int index, const QString &uuid, const QStringList &flags, QBLELocalService *service, QObject *parent)
-    : QObject(parent), m_uuid(uuid), m_flags(flags), m_service(service)
+QBLELocalCharacteristic::QBLELocalCharacteristic(QDBusConnection bus, unsigned int index, const QString& uuid, const QStringList& flags, QBLELocalService* service, QObject* parent)
+    : QObject(parent)
+    , m_uuid(uuid)
+    , m_flags(flags)
+    , m_service(service)
+    , m_bus(bus)
 {
     m_path = service->path().path() + QStringLiteral("/char") + QString::number(index);
     bus.registerObject(m_path, this, QDBusConnection::ExportAllSlots | QDBusConnection::ExportAllProperties);
@@ -35,9 +40,29 @@ QList<QDBusObjectPath> QBLELocalCharacteristic::descriptorPaths() const
     return {};
 }
 
+bool QBLELocalCharacteristic::notifying() const
+{
+    return m_notifying;
+}
+
+void QBLELocalCharacteristic::notify(const QByteArray& value)
+{
+    if (!m_notifying) {
+        qWarning() << Q_FUNC_INFO << "Remote device is not subscribed to" << m_uuid;
+        return;
+    }
+
+    // BlueZ sends a notification when the Value property changes
+    QDBusMessage signal = QDBusMessage::createSignal(m_path, QStringLiteral("org.freedesktop.DBus.Properties"), QStringLiteral("PropertiesChanged"));
+    QVariantMap changed;
+    changed.insert(QStringLiteral("Value"), value);
+    signal << QStringLiteral("org.bluez.GattCharacteristic1") << changed << QStringList();
+    m_bus.send(signal);
+}
+
 // Default implementations — subclasses override what they need
 
-QByteArray QBLELocalCharacteristic::ReadValue(const QVariantMap &)
+QByteArray QBLELocalCharacteristic::ReadValue(const QVariantMap&)
 {
     qWarning() << Q_FUNC_INFO << "Default ReadValue called — override in subclass";
     return QByteArray();
@@ -52,9 +77,13 @@ void QBLELocalCharacteristic::WriteValue(const QByteArray &value, const QVariant
 void QBLELocalCharacteristic::StartNotify()
 {
     qDebug() << Q_FUNC_INFO << "StartNotify called";
+    m_notifying = true;
+    emit notifyingChanged(true);
 }
 
 void QBLELocalCharacteristic::StopNotify()
 {
     qDebug() << Q_FUNC_INFO << "StopNotify called";
+    m_notifying = false;
+    emit notifyingChanged(false);
 }

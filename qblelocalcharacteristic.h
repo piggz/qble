@@ -31,9 +31,14 @@ public:
     QString uuid() const;
     QStringList flags() const;
     QList<QDBusObjectPath> descriptorPaths() const; // empty for now
+    bool notifying() const;
+
+    // Sends a notification to the subscribed remote device, needs the "notify" flag
+    void notify(const QByteArray& value);
 
 Q_SIGNALS:
-    void valueWritten(const QByteArray &value);
+    void valueWritten(const QByteArray& value);
+    void notifyingChanged(bool notifying);
 
 public Q_SLOTS:
     // BlueZ GATT server callbacks — override in subclass as needed
@@ -46,7 +51,9 @@ private:
     QString m_path;
     QString m_uuid;
     QStringList m_flags;
-    QBLELocalService *m_service;
+    QBLELocalService* m_service;
+    QDBusConnection m_bus;
+    bool m_notifying = false;
 };
 
 #endif // QBLELOCALCHARACTERISTIC_H
